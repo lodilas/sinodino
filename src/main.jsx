@@ -101,10 +101,14 @@ function App() {
   }, [activeCategory, links, search]);
 
   async function signInWithGithub() {
+    const redirectUrl = normalizeUrl(
+      import.meta.env.VITE_SITE_URL || new URL(import.meta.env.BASE_URL, window.location.origin).toString(),
+    );
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: redirectUrl,
       },
     });
 
@@ -353,6 +357,10 @@ function groupComments(rows) {
     groups[row.link_id].push(row);
     return groups;
   }, {});
+}
+
+function normalizeUrl(url) {
+  return url.endsWith("/") ? url : `${url}/`;
 }
 
 createRoot(document.getElementById("root")).render(<App />);
